@@ -8,7 +8,7 @@ todoModel.create = jest.fn();
 beforeEach(() => {
   req = httpMocks.createRequest();
   res = httpMocks.createResponse();
-  next = null;
+  next = jest.fn();
 });
 
 describe("todo.create", () => {
@@ -35,5 +35,13 @@ describe("todo.create", () => {
     await todoModel.create.mockReturnValue(mockTodo);
     await todoController.createTodo(req, res, next);
     expect(res._getJSONData()).toStrictEqual(mockTodo);
+  });
+
+  it("should handle errors", async () => {
+    const errorMessage = { message: "Done property missing" };
+    const rejectedPromise = Promise.reject(errorMessage);
+    todoModel.create.mockReturnValue(rejectedPromise);
+    await todoController.createTodo(req, res, next);
+    expect(next).toHaveBeenCalledWith(errorMessage);
   });
 });
