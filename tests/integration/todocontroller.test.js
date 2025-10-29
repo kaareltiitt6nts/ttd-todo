@@ -5,7 +5,7 @@ const mockTodo = require("../mock-data/new-todo.json");
 const endpoint = "/todos/";
 
 describe(endpoint, () => {
-  it(`POST ${endpoint}`, async () => {
+  test(`POST ${endpoint}`, async () => {
     const response = await request(app).post(endpoint).send(mockTodo);
 
     expect(response.statusCode).toBe(201);
@@ -22,5 +22,13 @@ describe(endpoint, () => {
     expect(response.body).toStrictEqual({
       message: "todo validation failed: done: Path `done` is required.",
     });
+  });
+
+  test(`GET ${endpoint}`, async () => {
+    const response = await request(app).get(endpoint);
+    expect(response.statusCode).toBe(200);
+    expect(Array.isArray(response.body)).toBeTruthy();
+    expect(response.body[0].title).toBeDefined();
+    expect(response.body[0].done).toBeDefined();
   });
 });

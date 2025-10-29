@@ -1,0 +1,14 @@
+[
+  {
+    "title": "first todo",
+    "done": false
+  },
+  {
+    "title": "second todo",
+    "done": false
+  },
+  {
+    "title": "third todo",
+    "done": true
+  }
+]
