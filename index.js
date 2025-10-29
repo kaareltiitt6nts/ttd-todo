@@ -1,15 +1,16 @@
 const express = require("express");
-require("dotenv/config");
+const todoRouter = require("./routes/todo");
+const mongodb = require("./db/mongodb");
+
+mongodb.connect();
 
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+app.use("/todos", todoRouter);
 
 app.get("/", (req, res) => {
   res.send("hi");
 });
 
-app.listen(PORT, (err) => {
-  console.log(`Server started! http://localhost:${PORT}`);
-});
+module.exports = app;
