@@ -6,6 +6,7 @@ const allTodos = require("../mock-data/all-todos.json");
 
 todoModel.create = jest.fn();
 todoModel.find = jest.fn();
+todoModel.findById = jest.fn();
 
 beforeEach(() => {
   req = httpMocks.createRequest();
@@ -72,5 +73,41 @@ describe("todo/get", () => {
     todoModel.find.mockReturnValue(rejectedPromise);
     await todoController.getTodos(req, res, next);
     expect(next).toHaveBeenCalledWith(errorMessage);
+  });
+});
+
+describe("todo/get/id", () => {
+  it("should have a get todo by id function", () => {
+    expect(typeof todoController.getTodoById).toBe("function");
+  });
+
+  it("should call todo get by id", async () => {
+    req.params.id = "6901ce2b452f9008dbce5f47";
+    await todoController.getTodoById(req, res, next);
+    expect(todoModel.findById).toHaveBeenCalledWith("6901ce2b452f9008dbce5f47");
+  });
+
+  it("should get todo by id", async () => {
+    req.params.id = "6901ce2b452f9008dbce5f47";
+    await todoModel.findById.mockReturnValue(mockTodo);
+    await todoController.getTodoById(req, res, next);
+    expect(todoModel.find).toHaveBeenCalledWith({ id: req.params.id });
+    expect(res.statusCode).toBe(200);
+    expect(res._isEndCalled()).toBeTruthy();
+  });
+
+  it("should handle errors", async () => {
+    const errorMessage = { message: "The promise rejected with the reason" };
+    const rejectedPromise = Promise.reject(errorMessage);
+    todoModel.find.mockReturnValue(rejectedPromise);
+    await todoController.getTodos(req, res, next);
+    expect(next).toHaveBeenCalledWith(errorMessage);
+  });
+
+  it("should handle 404", async () => {
+    todoModel.find.mockReturnValue(null);
+    await todoController.getTodoById(req, res, next);
+    expect(res.statusCode).toBe(404);
+    expect(res._isEndCalled()).toBeTruthy();
   });
 });
