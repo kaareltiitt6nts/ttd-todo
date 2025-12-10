@@ -32,4 +32,22 @@ const getTodoById = async (req, res, next) => {
   }
 };
 
-module.exports = { createTodo, getTodos, getTodoById };
+const updateTodo = async (req, res, next) => {
+  try {
+    const model = await todoModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      useFindAndModify: false,
+      runValidators: true,
+    });
+
+    if (model) {
+      res.status(201).json(model);
+    } else {
+      res.status(404).send();
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { createTodo, getTodos, getTodoById, updateTodo };
