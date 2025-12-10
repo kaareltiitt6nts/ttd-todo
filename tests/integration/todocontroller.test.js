@@ -67,3 +67,29 @@ describe(`PUT ${endpoint}:id`, () => {
     expect(response.statusCode).toBe(404);
   });
 });
+
+describe(`DELETE ${endpoint}:id`, () => {
+  let createdTodo;
+
+  beforeAll(async () => {
+    const response = await request(app).post(endpoint).send(mockTodo);
+    createdTodo = response.body;
+  });
+
+  test(`should delete an existing todo`, async () => {
+    const response = await request(app).delete(`${endpoint}${createdTodo._id}`);
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toStrictEqual({
+      message: "Todo deleted successfully",
+    });
+  });
+
+  test(`should return 404 when deleting non-existing id`, async () => {
+    const invalidId = "65a123456789012345678901";
+
+    const response = await request(app).delete(`${endpoint}${invalidId}`);
+
+    expect(response.statusCode).toBe(404);
+  });
+});
